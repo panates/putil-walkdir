@@ -1,9 +1,11 @@
 /* eslint-disable */
 const assert = require('assert');
-const {walkdir, walkdirSync} = require('../');
+const w = require('../');
+const walkdir = w.walkdir;
+const walkdirSync = w.walkdirSync;
 
 describe('Walkdir', function() {
-
+  this.slow(1000);
   it('should walk directory async', function(done) {
     let ok = 0;
     walkdir('./', function(f, stats) {
