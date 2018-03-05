@@ -1,4 +1,5 @@
 /* eslint-disable */
+'use strict';
 const assert = require('assert');
 const w = require('../');
 const walkdir = w.walkdir;
