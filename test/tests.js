@@ -10,6 +10,8 @@ describe('Walkdir', function() {
   it('should walk directory async', function(done) {
     let ok = 0;
     walkdir('./', function(f, stats) {
+      if (stats.isDirectory() && f.substring(0, 1) === '.')
+        return false;
       if (stats.isDirectory() && f === 'lib')
         ok++;
       if (!stats.isDirectory() && f === 'README.md')
@@ -23,6 +25,8 @@ describe('Walkdir', function() {
   it('should walk directory sync', function() {
     let ok = 0;
     walkdirSync('./', function(f, stats) {
+      if (stats.isDirectory() && f.substring(0, 1) === '.')
+        return false;
       if (stats.isDirectory() && f === 'lib')
         ok++;
       if (!stats.isDirectory() && f === 'README.md')
@@ -34,6 +38,8 @@ describe('Walkdir', function() {
   it('should ignore directory async', function(done) {
     let ok = 1;
     walkdir('./', function(f, stats) {
+      if (stats.isDirectory() && f.substring(0, 1) === '.')
+        return false;
       if (stats.isDirectory() && f === 'test')
         return false;
       if (!stats.isDirectory() && f.startsWith('test/'))
@@ -47,6 +53,8 @@ describe('Walkdir', function() {
   it('should ignore directory sync', function() {
     let ok = 1;
     walkdir('./', function(f, stats) {
+      if (stats.isDirectory() && f.substring(0, 1) === '.')
+        return false;
       if (stats.isDirectory() && f === 'test')
         return false;
       if (!stats.isDirectory() && f.startsWith('test/'))
