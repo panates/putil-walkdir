@@ -9,15 +9,21 @@ describe('Walkdir', function() {
   this.slow(1000);
   it('should walk directory async', function(done) {
     let ok = 0;
-    walkdir('./', function(f, stats) {
-      if (stats.isDirectory() && f.substring(0, 1) === '.')
-        return false;
-      if (stats.isDirectory() && f === 'lib')
-        ok++;
-      if (!stats.isDirectory() && f === 'README.md')
-        ok++;
+    walkdir('./', function(next, f, stats) {
+      if (stats.isDirectory()) {
+        if (f.substring(0, 1) === '.' || f.startsWith('node_modules'))
+          return next(false);
+        if (f === 'lib')
+          ok++;
+      } else {
+        if (f === 'README.md')
+          ok++;
+        if (f === 'lib/walkdir.js')
+          ok++;
+      }
+      next();
     }, function() {
-      assert(ok === 2, 'Failed');
+      assert(ok === 3, 'Failed');
       done();
     });
   });
@@ -25,25 +31,34 @@ describe('Walkdir', function() {
   it('should walk directory sync', function() {
     let ok = 0;
     walkdirSync('./', function(f, stats) {
-      if (stats.isDirectory() && f.substring(0, 1) === '.')
-        return false;
-      if (stats.isDirectory() && f === 'lib')
-        ok++;
-      if (!stats.isDirectory() && f === 'README.md')
-        ok++;
+      if (stats.isDirectory()) {
+        if (f.substring(0, 1) === '.' || f.startsWith('node_modules'))
+          return false;
+        if (f === 'lib')
+          ok++;
+      } else {
+        if (f === 'README.md')
+          ok++;
+        if (f === 'lib/walkdir.js')
+          ok++;
+      }
     });
-    assert(ok === 2, 'Failed');
+    assert(ok === 3, 'Failed');
   });
 
   it('should ignore directory async', function(done) {
     let ok = 1;
-    walkdir('./', function(f, stats) {
-      if (stats.isDirectory() && f.substring(0, 1) === '.')
-        return false;
-      if (stats.isDirectory() && f === 'test')
-        return false;
-      if (!stats.isDirectory() && f.startsWith('test/'))
-        ok = 0;
+    walkdir('./', function(next, f, stats) {
+      if (stats.isDirectory()) {
+        if (f.substring(0, 1) === '.' || f.startsWith('node_modules'))
+          return next(false);
+        if (f === 'test')
+          return next(false);
+      } else {
+        if (f.startsWith('test/'))
+          ok = 0;
+      }
+      next();
     }, function() {
       assert(ok, 'Failed');
       done();
@@ -53,12 +68,15 @@ describe('Walkdir', function() {
   it('should ignore directory sync', function() {
     let ok = 1;
     walkdir('./', function(f, stats) {
-      if (stats.isDirectory() && f.substring(0, 1) === '.')
-        return false;
-      if (stats.isDirectory() && f === 'test')
-        return false;
-      if (!stats.isDirectory() && f.startsWith('test/'))
-        ok = 0;
+      if (stats.isDirectory()) {
+        if (f.substring(0, 1) === '.' || f.startsWith('node_modules'))
+          return false;
+        if (f === 'test')
+          return false;
+      } else {
+        if (f.startsWith('test/'))
+          ok = 0;
+      }
     });
     assert(ok, 'Failed');
   });
