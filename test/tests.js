@@ -67,7 +67,7 @@ describe('Walkdir', function() {
 
   it('should ignore directory sync', function() {
     let ok = 1;
-    walkdir('./', function(f, stats) {
+    walkdirSync('./', (f, stats) => {
       if (stats.isDirectory()) {
         if (f.substring(0, 1) === '.' || f.startsWith('node_modules'))
           return false;
